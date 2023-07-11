@@ -27,13 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(`/api/stopCharging/${sessionID}`)
       .then(response => {
         if (response.ok) {
-          console.log('Charging stopped successfully!');
+          console.log('Stop charging request sent.');
         } else {
-          console.error('Failed to stop charging.');
+          console.error('Failed to send stop charging request.');
         }
       })
       .catch(error => {
         console.error('An error occurred:', error);
       });
-  });  
+  });    
 });

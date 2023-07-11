@@ -1,5 +1,7 @@
 const express = require('express');
 const request = require('request');
+const path = require('path');
+const stopCharging = require('./StopCharging');
 require('dotenv').config();
 const app = express();
 
@@ -42,32 +44,23 @@ app.post('/api/startCharging', (req, res) => {
   });
 });
 
-app.get('/api/stopCharging', (req, res) => {
-  const session_id = '64a605d805968d5d64be612a'; // Retrieve session ID from command-line argument
+app.get('/api/stopCharging/:session_id', (req, res) => {
+  const sessionID = req.params.session_id;
 
-  const options = {
-    method: 'GET',
-    url: `https://api.edrv.io/v1.1/sessions/${session_id}/stop`,
-    headers: {
-      Authorization: `Bearer ${process.env.API_KEY}`
-    }
-  };
+  if (!sessionID) {
+    res.status(400).json({ error: 'Please provide a valid session ID.' });
+    return;
+  }
 
-  request(options, function (error, response) {
-    if (error) {
-      console.error(error);
-      res.sendStatus(500);
-    } else {
-      console.log(response.body);
-      res.sendStatus(200);
-    }
-  });
+  stopCharging(sessionID);
+
+  res.status(200).json({ message: 'Stop charging request sent.' });
 });
 
-// Serve the index.html file
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  });
+// Serve the index.html file for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Start the server
 app.listen(3000, () => {
